@@ -1,0 +1,49 @@
+#!/bin/bash
+
+
+
+#opciones
+op=false
+lista_de_opciones=()
+n_opciones=${#lista_de_opciones[@]}
+w=false
+i=false
+R=false
+#sintaxis y orden
+lista_de_parametros=("$1" "$2" "$3" "$4" "$5")
+
+
+function control_operaciones(){
+	if $op; then
+
+		if [[ ${#lista_de_parametros[@]} > 3 ]]; then
+			echo "error de tamaño"
+			exit 1
+		fi
+
+		if [[ ${#lista_de_parametros[@]} > 1 && ( ${#lista_de_parametros[0]} > 1 || ${#lista_de_parametros[1]} > 1 || ${#lista_de_parametros[2]} > 1 ) ]]; then
+			echo "error de cantidad de opciones"
+			exit 1
+		fi
+	fi
+}
+
+
+function operaciones?(){
+
+	for parametro in ${lista_de_parametros[@]}; do
+
+		if [[ ${parametro:0:1} == '-' ]]; then
+			lista_de_opciones+=(${parametro/-}) #Me almacena el parámetro pero sin '-', lo remplazamos por nada para eliminarlo
+			op=true
+		else
+			echo "Error"
+			exit 1
+		fi
+	done
+	control_operaciones
+}
+
+
+
+operaciones?

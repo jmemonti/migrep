@@ -1,0 +1,133 @@
+#!/bin/bash
+
+#Funciones -w e -i
+
+
+#opciones
+op=false
+lista_de_opciones=()
+n_opciones=${#lista_de_opciones[@]}
+w=false
+i=false
+R=false
+#sintaxis y orden
+lista_de_parametros=("$1" "$2" "$3" "$4" "$5")
+#funciones
+patron=$1
+fichero=$2
+directorio=${ls}
+lista_de_patrones=()
+
+
+#(funciona)
+function comparacion_total(){
+  lista_patrones+=("$patron")
+}
+
+#(funciona)
+function ignorar_mayusculas(){
+  lista_patrones+=("${patron^^}") #palabra en mayúsculas
+}
+
+#(funciona)
+function leer_fichero(){
+  if [[ -f "$fichero" ]]; then
+    #leer fichero
+    while IFS= read -r linea; do
+      #busca patrones en la lista
+      for patron in "${lista_patrones[@]}"; do
+        if [[ $linea == *$patron* ]]; then
+          echo "$linea"
+        fi
+      done
+    done < "$fichero"
+  fi
+}
+
+
+
+function orden_opciones(){
+  
+  longitud=${#lista_de_opciones[@]}
+
+  #evita que haya mas de 1 parametro cuando se dan las opciones sueltas
+  for valor in "${lista_de_opciones[@]}"; do #Recorres opciones de la lista de opciones
+    #nuevo
+    if [[ $longitud > 1 && ${#valor} > 1 ]]; then
+      echo "Error tamaño parámetro"
+      exit 1
+    fi
+  done
+
+  #evita que haya mas de 3 opciones sueltas
+  if [[ $# > ${#lista_de_opciones[@]} ]]; then
+    echo "error demasiadas opciones"
+    exit 1
+  fi
+}
+
+function identificar_opciones(){
+
+  if [[ ${1:0:1} != '-' && -n $1 ]]; then
+    echo "Error"
+    exit 1
+  fi
+
+  if [[ ${1:0:1} == '-' ]]; then
+    lista_de_opciones+=(${1/-}) #Me almacena el parámetro pero sin '-' , lo remplazamos por nada para eliminarlo
+  fi
+}
+
+function parametros(){
+  for parametro in "${lista_de_parametros[@]}"; do
+    identificar_opciones "$parametro"
+  done
+}
+
+function aplicar_opciones(){
+  #recorres la lista con parámetros sin '-'
+  for parametro in "${lista_de_opciones[@]}"; do
+
+    longitud=${#lista_de_opciones}
+
+    #recorres los caracteres del parámetro
+    for ((i=0; i < $longitud; i++)); do
+      
+      case "${parametro:i:1}" in
+        w)
+          echo "llama a w"
+          w=true
+          ;;
+        R)
+          echo "llama a R"
+          R=true
+          ;;
+        i)
+          echo "llama a i"
+          i=true
+          ;;
+        *)
+          echo "Error"
+          exit 1
+          ;;
+      esac
+
+    done
+  done
+}
+
+
+
+parametros
+orden_opciones
+aplicar_opciones
+
+
+
+
+
+
+#comparacion_total
+#ignorar_mayusculas
+#leer_fichero
+#recorrido_recursivo
